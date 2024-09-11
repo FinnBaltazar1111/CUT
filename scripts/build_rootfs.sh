@@ -23,7 +23,6 @@ arch="${args['arch']-amd64}"
 chroot_mounts="proc sys dev run"
 
 if [ -d "$rootfs_dir" ]; then
-  echo $rootfs_dir
   rm -r "$rootfs_dir"
 fi
 
@@ -64,16 +63,26 @@ fi
 tar -xf alpine-minirootfs.tar.gz -C $rootfs_dir
 
 print_info "copying rootfs setup scripts"
-cp setup_rootfs_alpine.sh "$rootfs_dir/opt/"
 cp /etc/resolv.conf "$rootfs_dir/etc/resolv.conf"
+cp -ar ../rootfs/* $rootfs_dir
 
 if [ ! -d shflags ]; then
   git clone https://github.com/kward/shflags
 fi
 
-mkdir $rootfs_dir/usr/share/lib
-cp shflags/shflags $rootfs_dir/usr/share/shflags
-cp shflags/lib/shunit2 $rootfs_dir/usr/share/lib/shunit2
+if [ ! -d flashrom ]; then
+  git clone https://chromium.googlesource.com/chromiumos/third_party/flashrom
+fi
+
+cd flashrom
+meson setup builddir
+meson compile -C builddir
+DESTDIR=$rootfs_dir meson install -C builddir
+cd ..
+
+mkdir $rootfs_dir/usr/share/misc/lib
+cp shflags/shflags $rootfs_dir/usr/share/misc/shflags
+cp shflags/lib/shunit2 $rootfs_dir/usr/share/misc/lib/shunit2
 
 print_info "creating bind mounts for chroot"
 trap unmount_all EXIT

@@ -27,6 +27,12 @@ The following payloads are included in the current build; PRs are welcome, but i
 - Pencilmod WP disable loop
 - Kernver rollback
 
+## Utilities
+- Set GBB flags
+- Remove FWMP
+- Set FWMP flags
+- Set kernver
+
 ## Building
 CUT uses modified versions of the [Shimboot](https://github.com/ading2210/shimboot) build scripts, and as such building is similar.
 To build a complete image, use `doas ./build_complete.sh <board>`

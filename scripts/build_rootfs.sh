@@ -70,15 +70,15 @@ if [ ! -d shflags ]; then
   git clone https://github.com/kward/shflags
 fi
 
-if [ ! -d flashrom ]; then
-  git clone https://chromium.googlesource.com/chromiumos/third_party/flashrom
-fi
+#if [ ! -d flashrom ]; then
+#  git clone https://chromium.googlesource.com/chromiumos/third_party/flashrom
+#fi
 
-cd flashrom
-meson setup builddir
-meson compile -C builddir
-DESTDIR=$rootfs_dir meson install -C builddir
-cd ..
+#cd flashrom
+#meson setup builddir
+#meson compile -C builddir
+#DESTDIR=$rootfs_dir meson install -C builddir
+#cd ..
 
 mkdir $rootfs_dir/usr/share/misc/lib
 cp shflags/shflags $rootfs_dir/usr/share/misc/shflags

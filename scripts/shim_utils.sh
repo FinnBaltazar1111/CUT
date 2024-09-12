@@ -70,9 +70,8 @@ copy_kernel() {
 #copy the kernel image then extract the initramfs
 extract_initramfs_full() {
   local shim_path="$1"
-  local rootfs_dir="$2"
-  local kernel_bin="$3"
-  local arch="$4"
+  local kernel_bin="$2"
+  local arch="$3"
   local kernel_dir=/tmp/shim_kernel
 
   echo "copying the shim kernel"
@@ -80,12 +79,12 @@ extract_initramfs_full() {
   mkdir $kernel_dir -p
   copy_kernel $shim_path $kernel_dir
 
-  echo "extracting initramfs from kernel (this may take a while)"
-  if [ "$arch" = "arm64" ]; then
-    extract_initramfs_arm $kernel_dir/kernel.bin $kernel_dir $rootfs_dir
-  else
-    extract_initramfs $kernel_dir/kernel.bin $kernel_dir $rootfs_dir
-  fi
+#  echo "extracting initramfs from kernel (this may take a while)"
+#  if [ "$arch" = "arm64" ]; then
+#    extract_initramfs_arm $kernel_dir/kernel.bin $kernel_dir $rootfs_dir
+#  else
+#    extract_initramfs $kernel_dir/kernel.bin $kernel_dir $rootfs_dir
+#  fi
 
   if [ "$kernel_bin" ]; then 
     cp $kernel_dir/kernel.bin $kernel_bin

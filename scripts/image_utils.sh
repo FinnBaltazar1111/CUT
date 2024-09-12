@@ -18,9 +18,9 @@ make_bootable() {
 }
 
 partition_disk() {
+  echo $1
   local image_path=$(realpath -m "${1}")
   local bootloader_size="$2"
-  local rootfs_name="$3"
 
   #create partition table with fdisk
   ( 
@@ -73,25 +73,14 @@ safe_mount() {
 create_partitions() {
   local image_loop=$(realpath -m "${1}")
   local kernel_path=$(realpath -m "${2}")
-  local is_luks=${3} # 0 for false 1 for true
-  local PASSWD="${4}"
-  local CRYPT_PATH="${5}"
 
   #create stateful
-  mkfs.ext4 "${image_loop}p1"
+  mkfs.ext4 "${image_loop}p1" > /dev/null
   #copy kernel
   dd if=$kernel_path of="${image_loop}p2" bs=1M oflag=sync
   make_bootable $image_loop
   #create bootloader partition
-  mkfs.ext2 "${image_loop}p3"
-  #create rootfs partition
-  if [ $is_luks ]; then
-    echo "${PASSWD}" | $CRYPT_PATH luksFormat "${image_loop}p4"
-    echo "${PASSWD}" | $CRYPT_PATH luksOpen "${image_loop}p4" rootfs
-    mkfs.ext4 /dev/mapper/rootfs
-  else 
-    mkfs.ext4 "${image_loop}p4"
-  fi
+  mkfs.ext2 "${image_loop}p3" > /dev/null
 }
 
 populate_partitions() {
@@ -115,9 +104,6 @@ populate_partitions() {
   local bootloader_mount="/tmp/shim_bootloader"
   safe_mount "${image_loop}p3" "$bootloader_mount"
   cp -arv $rootfs_dir "$bootloader_mount"
-  if [ ! "$git_tag" ]; then #mark it as a dev version if needed
-    printf "$git_hash" > "$bootloader_mount/opt/.shimboot_version_dev"
-  fi
   umount "$bootloader_mount"
 }
 
@@ -125,7 +111,7 @@ create_image() {
   local image_path=$(realpath -m "${1}")
   local bootloader_size="$2"
   
-  #stateful + kernel + bootloader + rootfs
+  #stateful + kernel + bootloader 
   local total_size=$((1 + 32 + $bootloader_size))
   rm -rf "${image_path}"
   fallocate -l "${total_size}M" "${image_path}"

@@ -19,3 +19,12 @@ logo () {
   echo "See credits for full author list"
   echo -e "$white"
 }
+
+check_wp_status () {
+  if [ $1 ]; then
+    echo "WP enabled; aborting!"
+    return 1
+  else
+    return 0
+  fi
+}

@@ -27,23 +27,23 @@ arch="${args['arch']}"
 name="${args['name']}"
 
 print_info "reading the shim image"
-initramfs_dir=/tmp/shim_initramfs
 kernel_img=/tmp/kernel.img
 rm -rf $initramfs_dir $kernel_img
-
+extract_initramfs_full $shim_path $kernel_img "$arch"
 
 print_info "creating disk image"
-#create a 20mb bootloader partition
-create_image $output_path $(du -sm $rootfs_dir)
+#create a 35mb bootloader partition
+create_image $output_path 35 
 
 print_info "creating loop device for the image"
 image_loop=$(create_loop ${output_path})
 
 print_info "creating partitions on the disk image"
-create_partitions $image_loop $(du -sm $rootfs_dir) $kernel_img
+create_partitions $image_loop $kernel_img
 
 print_info "copying data into the image"
-populate_partitions $image_loop $initramfs_dir $rootfs_dir "$quiet"
+echo $rootfs_dir
+populate_partitions $image_loop $rootfs_dir "$quiet"
 rm -rf $initramfs_dir $kernel_img
 
 print_info "cleaning up loop devices"

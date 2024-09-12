@@ -9,7 +9,7 @@ print_help() {
   echo "  compress     - Compress the final build into a zip file"
   echo "  quiet        - Don't use progress indicators which may clog up log files."
   echo "  data_dir     - The working directory for the scripts. This defaults to ../build"
-  echo "  arch         - The CPU architecture to build the shimboot image for. Set this to 'arm64' if you have an ARM Chromebook."
+  echo "  arch         - The CPU architecture to build the CUT image for. Set this to 'arm64' if you have an ARM Chromebook."
 }
 
 assert_root
@@ -20,7 +20,7 @@ base_dir="$(realpath -m  $(dirname "$0"))"
 board="$1"
 
 quiet="${args['quiet']}"
-data_dir="${args['data_dir']}"
+data_dir="${args['data_dir']-../build}"
 arch="${args['arch']-amd64}"
 compress_img="${args['compress']}"
 
@@ -145,16 +145,16 @@ if [ ! "$rootfs_dir" ]; then
 fi
 
 print_title "building final disk image"
-final_image="$data_dir/shimboot_$board.bin"
+final_image="$data_dir/CUT-$board.bin"
 rm -rf $final_image
-retry_cmd ./build.sh $final_image $shim_bin $rootfs_dir "quiet=$quiet" "arch=$arch" "name=$distro" "luks=$luks"
+retry_cmd ./build.sh $final_image $shim_bin $rootfs_dir "quiet=$quiet" "arch=$arch" 
 print_info "build complete! the final disk image is located at $final_image"
 
 print_title "cleaning up"
 clean_loops
 
 if [ "$compress_img" ]; then
-  image_zip="$data_dir/shimboot_$board.zip"
+  image_zip="$data_dir/CUT-$board.zip"
   print_title "compressing disk image into a zip file"
   zip -j $image_zip $final_image
   print_info "finished compressing the disk file"

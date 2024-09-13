@@ -13,5 +13,6 @@ credits () {
   echo "Shflags - Kate Ward"
   echo "VBOOT utilities - ChromiumOS project"
   echo "Flashrom - Flashrom project, ChromiumOS project"
+  echo "Logo - Vale#0210"
   read a
 }

@@ -84,11 +84,7 @@ trap sigint_handler SIGINT
 shim_url="https://dl.darkn.bio/api/raw/?path=/SH1mmer/$board.zip"
 boards_url="https://chromiumdash.appspot.com/cros/fetch_serving_builds?deviceCategory=ChromeOS"
 
-if [ -z "$data_dir" ]; then
-  data_dir="$base_dir/build"
-else
-  data_dir="$(realpath -m "$data_dir")"
-fi
+data_dir="$(realpath -m "$data_dir")"
 
 shim_bin="$data_dir/shim_$board.bin"
 shim_zip="$data_dir/shim_$board.zip"
@@ -147,6 +143,7 @@ fi
 print_title "building final disk image"
 final_image="$data_dir/CUT-$board.bin"
 rm -rf $final_image
+echo $rootfs_dir
 retry_cmd ./build.sh $final_image $shim_bin $rootfs_dir "quiet=$quiet" "arch=$arch" 
 print_info "build complete! the final disk image is located at $final_image"
 

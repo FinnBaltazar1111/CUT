@@ -16,7 +16,7 @@ arch="${10}"
 echo "$hostname" > /etc/hostname
 
 #install base packages
-apk add wpa_supplicant vboot-utils curl flashrom tpm2-tss
+apk add wpa_supplicant vboot-utils curl tpm2-tss
 
 #debloat the system
 rm -rf /lib/rc

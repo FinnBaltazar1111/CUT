@@ -64,6 +64,7 @@ tar -xf alpine-minirootfs.tar.gz -C $rootfs_dir
 
 print_info "copying rootfs setup scripts"
 cp /etc/resolv.conf "$rootfs_dir/etc/resolv.conf"
+rm $rootfs_dir/sbin/init
 cp -ar ../rootfs/* $rootfs_dir
 
 if [ ! -d shflags ]; then
@@ -74,11 +75,11 @@ fi
 #  git clone https://chromium.googlesource.com/chromiumos/third_party/flashrom
 #fi
 
-#cd flashrom
-#meson setup builddir
-#meson compile -C builddir
-#DESTDIR=$rootfs_dir meson install -C builddir
-#cd ..
+cd flashrom
+meson setup builddir
+meson compile -C builddir
+DESTDIR=$rootfs_dir meson install -C builddir
+cd ..
 
 mkdir $rootfs_dir/usr/share/misc/lib
 cp shflags/shflags $rootfs_dir/usr/share/misc/shflags
@@ -97,6 +98,8 @@ chroot_command="/opt/setup_rootfs_alpine.sh \
   '$arch'" 
 
 LC_ALL=C chroot $rootfs_dir /bin/sh -c "${chroot_command}"
+
+sed -i $rootfs_dir/usr/bin/gbb_flags_common.sh "s/-p host/-p internal/g" #make the GBB flags script not be stupid
 
 trap - EXIT
 unmount_all

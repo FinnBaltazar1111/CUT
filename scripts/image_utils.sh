@@ -18,11 +18,11 @@ make_bootable() {
 }
 
 partition_disk() {
-  echo $1
   local image_path=$(realpath -m "${1}")
   local bootloader_size="$2"
 
   #create partition table with fdisk
+  echo $bootloader_size
   ( 
     echo g #new gpt disk label
 
@@ -47,7 +47,7 @@ partition_disk() {
     echo #accept default first sector
     echo "+${bootloader_size}M" #set partition size
     echo t #change partition type
-    echo #accept default parition number
+    echo # default
     echo 3CB8E202-3B7E-47DD-8A3C-7FF2A13CFCEC #chromeos rootfs type
 
     #write changes
@@ -88,10 +88,6 @@ populate_partitions() {
   local rootfs_dir=$(realpath -m "${2}")
   local quiet="$4"
 
-  #figure out if we are on a stable release
-  local git_tag="$(git tag -l --contains HEAD)"
-  local git_hash="$(git rev-parse --short HEAD)"
-
   #mount and write empty file to stateful
   local stateful_mount=/tmp/shim_stateful
   safe_mount "${image_loop}p1" $stateful_mount
@@ -103,7 +99,7 @@ populate_partitions() {
   #mount and write to bootloader rootfs
   local bootloader_mount="/tmp/shim_bootloader"
   safe_mount "${image_loop}p3" "$bootloader_mount"
-  cp -arv $rootfs_dir "$bootloader_mount"
+  cp -ar $rootfs_dir/* "$bootloader_mount"
   umount "$bootloader_mount"
 }
 
@@ -112,7 +108,7 @@ create_image() {
   local bootloader_size="$2"
   
   #stateful + kernel + bootloader 
-  local total_size=$((1 + 32 + $bootloader_size))
+  local total_size=$((1 + 32 + $bootloader_size + 5))
   rm -rf "${image_path}"
   fallocate -l "${total_size}M" "${image_path}"
 

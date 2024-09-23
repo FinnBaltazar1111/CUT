@@ -6,15 +6,9 @@
   A disk is separated into multiple parts, or partitions; each one usually contains a filesystem, but not always 
 
 - [SUBSECTION]Firmware[NOSUBSECTION]
-  - First code run by the AP (commonly known as the CPU)
+  - First code run by the AP (usually the CPU)
   - Loads and bootstraps the ChromeOS system
-
-- [SUBSECTION]FWMP[NOSUBSECTION] (Firmware Management Parameters)
-  - For the purposes of this documentation, [UNDERLINE]FWMP[NOUNDERLINE] refers specifically to the
-  block_devmode flag being set, as that's what almost everyone means when they say "FWMP is set"
-  - Stored on the TPM
-  - Dictates whether [UNDERLINE]NOFWMP dev mode[NOUNDERLINE] can be loaded
-  - Cannot be set while booted in [UNDERLINE]Recovery mode[NOUNDERLINE] while [UNDERLINE]Developer mode[NOUNDERLINE] is enabled; aka RMA shims
+  - Separated into read-only (RO) and read-write (RW) sections; the GSC protects the RO section from being written to unless the [UNDERLINE]Hardware WP[NOUNDERLINE] is disabled 
 
 - [SUBSECTION]Rootfs[NOSUBSECTION]
   - The actual system of ChromeOS; stores all executed programs
@@ -43,28 +37,51 @@
 
 - [SUBSECTION]Recovery image[NOSUBSECTION] (TODO)
 
-- [SUBSECTION]Kenver[NOSUBSECTION]
-  Also known as kernel version
-  - Google's response to downgrading
-  - Depthcharge refuses to load any ChromeOS kernel in [UNDERLINE]Verified boot mode[NOUNDERLINE] unless the DISABLE_FW_ROLLBACK_CHECK [UNDERLINE]GBB[NOUNDERLINE] flag is set.
-
 - [SUBSECTION]Stateful[NOSUBSECTION]
   - Stores the [UNDERLINE]Encstateful[NOUNDERLINE]
   - Largest partition on the disk
   - Stores various OS info
+
+- [SUBSECTION]VPD[NOSUBSECTION] (Vital Product Data)
+  - Stored in the RO section of the [UNDERLINE]Firmware[NOUNDERLINE]
+  - Stores data that uniquely identifies a device
+  - Contains the serial number, MAC address, and
+
+[SECTION]Section 2 - Security systems[UNSECTION]
+
+- [SUBSECTION]FWMP[NOSUBSECTION] (Firmware Management Parameters)
+  - For the purposes of this documentation, [UNDERLINE]FWMP[NOUNDERLINE] refers specifically to the
+  block_devmode flag being set, as that's what almost everyone means when they say "FWMP is set"
+  - Stored on the TPM
+  - Dictates whether [UNDERLINE]NOFWMP dev mode[NOUNDERLINE] can be loaded
+  - Cannot be set while booted in [UNDERLINE]Recovery mode[NOUNDERLINE] while [UNDERLINE]Developer mode[NOUNDERLINE] is enabled; aka RMA shims
+
+- [SUBSECTION]Kenver[NOSUBSECTION]
+  Also known as kernel version
+  - Google's response to downgrading
+  - Depthcharge refuses to load any ChromeOS kernel in [UNDERLINE]Verified boot mode[NOUNDERLINE] unless the DISABLE_FW_ROLLBACK_CHECK [UNDERLINE]GBB[NOUNDERLINE] flag is set.
 
 - [SUBSECTION]Encstateful[NOSUBSECTION] (encrypted stateful)
   - Main storage partition; any user-edited files are stored here
   - Stores enrollment information
 
 - [SUBSECTION]GSC[NOSUBSECTION] (Google Security Chip)
-  AKA CR50/TI48/TI50 or TPM
-  - Performs [UNDERLINE]Kernel[NOUNDERLINE] verification
+  AKA TPM; chip on the motherboard that runs the CR50/TI48/TI50 software stack 
   - Stores [UNDERLINE]FWMP[NOUNDERLINE]
   - Stores the decryption key for the [UNDERLINE]Encstateful[NOUNDERLINE]
   - Wiped on entering and exiting [UNDERLINE]Developer mode[NOUNDERLINE]
   - Set to read-only when booting while booting [UNDERLINE]Recovery mode[NOUNDERLINE] while [UNDERLINE]Developer mode[NOUNDERLINE] is enabled
     This applies to booting [UNDERLINE]RMA shims[NOUNDERLINE], as well as unverified recovery images
       (as [UNDERLINE]recovery images[NOUNDERLINE] loaded in developer mode will not check if their [UNDERLINE]kernver[NOUNDERLINE] is lower than that of the system)
+  - Controls OS access to the [UNDERLINE]Firmware[NOUNDERLINE]
 
-[SECTION]Section 2 - Utilities[SECTION]
+- [SUBSECTION]Hardware WP[UNSECTION]
+  A hardware condition that tells the [UNDERLINE]GSC[NOUNDERLINE] to disallow writes to the RO [UNDERLINE]Firmware[NOUNDERLINE]
+  If [UNDERLINE]FWMP[NOUNDERLINE] is set, this condition is ignored and the RO firmware is protected regardless
+  Depending on the device, this can be disabled by:
+    - Unscrewing a specific screw on the motherboard
+    - Unplugging the battery
+    - Bridging 2 pins on the motherboard
+  See https://docs.mrchromebox.tech/docs/firmware/wp/disabling.html for more info
+
+[SECTION]Section 3 - Utilities[SECTION]

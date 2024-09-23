@@ -53,6 +53,7 @@ convert_doc () {
   doc_text=$(replace "\[UNSECTION\]"    "${unsection}"    "${doc_text}")
   doc_text=$(replace "\[SUBSECTION\]"   "${subsection}"   "${doc_text}")
   doc_text=$(replace "\[NOSUBSECTION\]" "${nosubsection}" "${doc_text}")
+  doc_text=$(echo "${doc_text}" | sed -e "s/\(https\:\/\/[^ ]*\)/<a href='\1'>\1<\/a>/g")
 
   doc_text=$(echo "${doc_text}"         | tail -$(($(echo "${doc_text}" | wc -l) - 2))) # remove the title and desc, as they're in the template
 
@@ -61,7 +62,7 @@ convert_doc () {
 }
 rm -rf render
 mkdir -p render
-for i in $(ls -R $(realpath ../../docs/))
+for i in $(ls -r ../../docs/)
 do
   echo $i
   convert_doc $i

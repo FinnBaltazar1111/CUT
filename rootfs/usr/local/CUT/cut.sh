@@ -8,6 +8,17 @@
 . usr/local/CUT/credits.sh
 . usr/local/CUT/docs.sh
 
+mount /dev/mmcblk0p1 /mnt
+if [ -f /mnt/.fwmp-remove ]; then
+  status "FWMP removal directive detected"
+  status "Clearing FWMP"
+  clear_fwmp
+  rm /mnt/.fwmp-remove
+  umount /mnt
+  status "Rebooting in 5"
+  reboot
+fi
+
 while true; do
   clear
   logo

@@ -5,7 +5,7 @@
 . ./common.sh
 
 print_help() {
-  echo "Usage: ./build_rootfs.sh rootfs_path"
+  echo "Usage: ./build_rootfs.sh rootfs_path build_dir"
   echo "Valid named arguments (specify with 'key=value'):"
   echo "  hostname        - The hostname for the new rootfs."
   echo "  arch            - The CPU architecture to build the rootfs for."
@@ -13,7 +13,7 @@ print_help() {
 }
 
 assert_root
-assert_deps "realpath debootstrap findmnt wget pcregrep tar"
+assert_deps "realpath debootstrap findmnt wget pcregrep tar ninja meson clang++"
 assert_args "$2"
 parse_args "$@"
 
@@ -21,6 +21,7 @@ rootfs_dir=$(realpath -m "${1}")
 release_name="minirootfs-3.20"
 arch="${args['arch']-amd64}"
 chroot_mounts="proc sys dev run"
+build_dir=$(realpath -m ${2})
 
 if [ -d "$rootfs_dir" ]; then
   rm -r "$rootfs_dir"
@@ -64,26 +65,27 @@ tar -xf alpine-minirootfs.tar.gz -C $rootfs_dir
 
 print_info "copying rootfs setup scripts"
 cp /etc/resolv.conf "$rootfs_dir/etc/resolv.conf"
-rm $rootfs_dir/sbin/init
+rm $rootfs_dir/sbin/init #remove the stock init, as it doesn't work
 cp -ar ../rootfs/* $rootfs_dir
 
 if [ ! -d shflags ]; then
   git clone https://github.com/kward/shflags
 fi
 
-#if [ ! -d flashrom ]; then
-#  git clone https://chromium.googlesource.com/chromiumos/third_party/flashrom
-#fi
+print_info "Building auxilary binaries because ChromeOS just has to be unique"
 
-cd flashrom
-meson setup builddir
-meson compile -C builddir
-DESTDIR=$rootfs_dir meson install -C builddir
-cd ..
+buildables="flashrom vpd"
+for buildscript in $buildables 
+do
+  echo "Building $buildscript"
+  ./buildables/${buildscript}.sh $rootfs_dir $build_dir
+done
 
 mkdir $rootfs_dir/usr/share/misc/lib
 cp shflags/shflags $rootfs_dir/usr/share/misc/shflags
 cp shflags/lib/shunit2 $rootfs_dir/usr/share/misc/lib/shunit2
+
+cp -r docs "${rootfs_dir}/usr/local/CUT/docs"
 
 print_info "creating bind mounts for chroot"
 trap unmount_all EXIT
@@ -99,7 +101,7 @@ chroot_command="/opt/setup_rootfs_alpine.sh \
 
 LC_ALL=C chroot $rootfs_dir /bin/sh -c "${chroot_command}"
 
-sed -i $rootfs_dir/usr/bin/gbb_flags_common.sh "s/-p host/-p internal/g" #make the GBB flags script not be stupid
+#sed -i $rootfs_dir/usr/bin/gbb_flags_common.sh "s/-p host//g" #make the GBB flags script not be stupid
 
 trap - EXIT
 unmount_all

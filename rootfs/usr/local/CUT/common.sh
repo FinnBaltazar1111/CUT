@@ -39,6 +39,10 @@ check_fwmp_status () { #can't wait to implement this 🫠
   test
 }
 
+status () {
+  echo "${bold}$1${unbold}"
+}
+
 print_doc () {
   doc=$1
   doc_text=$(cat "usr/local/CUT/docs/${doc}.txt")
@@ -52,7 +56,14 @@ print_doc () {
   doc_text=$(echo "${doc_text}" | sed "s/\[UNITALIC\]/${unitalic}/g")
   doc_text=$(echo "${doc_text}" | sed "s/\[UNDERLINE\]/${underline}/g")
   doc_text=$(echo "${doc_text}" | sed "s/\[NOUNDERLINE\]/${nounderline}/g")
+  doc_text=$(echo "${doc_text}" | sed "s/\[SECTION\]/${bold}${underline}/g")
+  doc_text=$(echo "${doc_text}" | sed "s/\[UNSECTION\]/${unbold}${nounderline}/g")
+  doc_text=$(echo "${doc_text}" | sed "s/\[TITLE]\]/# ${bold}${underline}${green}/g")
+  doc_text=$(echo "${doc_text}" | sed "s/\[UNTITLE\]/${unbold}${nounderline}${white}/g")
+  doc_text=$(echo "${doc_text}" | sed "s/\[DESC]\]/${bold}${underline}${green}/g")
+  doc_text=$(echo "${doc_text}" | sed "s/\[UNDESC]\]/${unbold}${nounderline}${ungreen}/g")
   clear
   echo -e "${doc_text}"
   read a
 }
+

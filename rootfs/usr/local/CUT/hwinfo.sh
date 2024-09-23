@@ -1,5 +1,7 @@
 #!/bin/sh
+
 . usr/local/CUT/common.sh
+
 hw_info() {
   mount -o ro /dev/mmcblk0p3 /mnt
   rootfs1ver=$(cat /mnt/etc/os-release | sed -n '7p' | grep -o "[0-9]*")

@@ -1,5 +1,9 @@
 #!/bin/env bash
 # Edited from source: https://github.com/MercuryWorkshop/sh1mmer/blob/beautifulworld/wax/lib/buildables/flashrom/build.sh 
+if [ -f "${2}/flashrom-repo/flashrom" ]; then
+	cp "${2}/flashrom-repo/flashrom" "${1}/usr/bin"
+	exit
+fi
 og_pwd=$PWD
 cd $2
 
@@ -34,25 +38,24 @@ LIBDIR="$(realpath lib)"
 
 if ! [ -d "${2}/pciutils" ]; then
 	git clone https://github.com/pciutils/pciutils "${2}/pciutils"
-	cd pciutils
+	cd "${2}/pciutils"
 	git checkout v3.11.1
 else
-	cd pciutils
+	cd "${2}/pciutils"
 	make clean
 fi
 
 make install-lib DESTDIR="$LIBDIR" PREFIX=
-cd ..
 
 
 if ! [ -d "${2}/flashrom-repo" ]; then
 	git clone -n https://chromium.googlesource.com/chromiumos/third_party/flashrom "${2}/flashrom-repo"
-	cd flashrom-repo
+	cd "${2}/flashrom-repo"
 	git checkout 24513f43e17a29731b13bfe7b2f46969c45b25e0
 	git apply $og_pwd/buildables/patches/flashrom.patch
 else
-	cd flashrom-repo
-	#rm -rf build
+	cd "${2}/flashrom-repo"
+	rm -rf build
 	make clean
 fi
 
@@ -63,6 +66,6 @@ export PKG_CONFIG_PATH="$LIBDIR/lib/pkgconfig"
 #meson setup -Dbuildtype=release -Dprefer_static=true -Dtests=disabled -Ddefault_programmer_name=internal -Dwerror=false -Dc_args="-I$LIBDIR/include" -Dc_link_args="-static -lcap -lz" "$CROSSFILE" build
 #ninja -C build flashrom
 #"$STRIP" -s build/flashrom
-
+echo $PWD
 make strip CONFIG_STATIC=yes CONFIG_DEFAULT_PROGRAMMER_NAME=internal CFLAGS="-I$LIBDIR/include" LDFLAGS="-L$LIBDIR/lib" EXTRA_LIBS="-lz"
-cp flashrom $1/usr/bin
+cp flashrom "${1}/usr/bin"

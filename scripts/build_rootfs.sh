@@ -12,16 +12,17 @@ print_help() {
   echo "If you do not specify the hostname, you will be prompted for it later."
 }
 
+echo "$@"
 assert_root
 assert_deps "realpath debootstrap findmnt wget pcregrep tar ninja meson clang++"
-assert_args "$2"
+assert_args "$3"
 parse_args "$@"
-
 rootfs_dir=$(realpath -m "${1}")
+build_dir=$(realpath -m "${2}")
 release_name="minirootfs-3.20"
 arch="${args['arch']-amd64}"
 chroot_mounts="proc sys dev run"
-build_dir=$(realpath -m ${2})
+echo $build_dir
 
 if [ -d "$rootfs_dir" ]; then
   rm -r "$rootfs_dir"
@@ -85,7 +86,7 @@ mkdir $rootfs_dir/usr/share/misc/lib
 cp shflags/shflags $rootfs_dir/usr/share/misc/shflags
 cp shflags/lib/shunit2 $rootfs_dir/usr/share/misc/lib/shunit2
 
-cp -r docs "${rootfs_dir}/usr/local/CUT/docs"
+cp -r ../docs "${rootfs_dir}/usr/local/CUT/docs"
 
 print_info "creating bind mounts for chroot"
 trap unmount_all EXIT
@@ -107,4 +108,4 @@ trap - EXIT
 unmount_all
 
 print_info "rootfs has been created"
-print_info "final size: $(du -hd0 $rootfs_dir)"
+print_info "Final size: $(du -hd0 $rootfs_dir)"

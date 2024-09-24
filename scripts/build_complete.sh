@@ -23,6 +23,7 @@ quiet="${args['quiet']}"
 data_dir="${args['data_dir']-../build}"
 arch="${args['arch']-amd64}"
 compress_img="${args['compress']}"
+build_dir="$(realpath -m ${args['build_dir']-../build})"
 
 #a list of all arm board names
 arm_boards="
@@ -136,6 +137,7 @@ if [ ! "$rootfs_dir" ]; then
   mkdir -p $rootfs_dir
   
   ./build_rootfs.sh $rootfs_dir \
+    "${build_dir}" \
     hostname=CUT-$board \
     arch=$arch 
 fi
@@ -150,10 +152,12 @@ print_info "build complete! the final disk image is located at $final_image"
 print_title "cleaning up"
 clean_loops
 
+print_info "Final image size: $(du -smh $final_image)"
 if [ "$compress_img" ]; then
-  image_zip="$data_dir/CUT-$board.zip"
+  image_zip="$data_dir/CUT-$board.xz"
   print_title "compressing disk image into a zip file"
-  zip -j $image_zip $final_image
+  time xz -z9ce $final_image > $image_zip
   print_info "finished compressing the disk file"
   print_info "the finished zip file can be found at $image_zip" 
+  print_info "Final zip size: $(du -smh $image_zip)"
 fi

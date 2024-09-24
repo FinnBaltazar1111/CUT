@@ -86,6 +86,7 @@ mkdir $rootfs_dir/usr/share/misc/lib
 cp shflags/shflags $rootfs_dir/usr/share/misc/shflags
 cp shflags/lib/shunit2 $rootfs_dir/usr/share/misc/lib/shunit2
 
+cp -r ../CUT/ "${rootfs_dir}/usr/local/"
 cp -r ../docs "${rootfs_dir}/usr/local/CUT/docs"
 
 print_info "creating bind mounts for chroot"

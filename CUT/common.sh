@@ -63,7 +63,6 @@ print_doc () {
   doc_text=$(echo "${doc_text}" | sed "s/\[DESC]\]/${bold}${underline}${green}/g")
   doc_text=$(echo "${doc_text}" | sed "s/\[UNDESC]\]/${unbold}${nounderline}${ungreen}/g")
   clear
-  echo -e "${doc_text}"
-  read a
+  echo "${doc_text}" | less
 }
 

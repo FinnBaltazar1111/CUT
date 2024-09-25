@@ -8,7 +8,7 @@ docs () {
   do
     clear
     logo
-    echo -e "${green} Collection of documentation and guides on how to use the various payloads included in CUT. ${white}"
+    echo -e "${green}Collection of documentation and guides on how to use the various payloads included in CUT. ${white}"
     echo "c - Basic ChromeOS hacking terminology"
     echo "p - Payloads"
     echo "u - Utilities"

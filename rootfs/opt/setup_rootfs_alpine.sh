@@ -19,7 +19,10 @@ echo "$hostname" > /etc/hostname
 echo "https://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories # needed for tpm2-tools
 apk add wpa_supplicant vboot-utils curl tpm2-tools cryptsetup
 
+apk del apk-tools
 #debloat the system
 rm -rf /lib/rc
+rm -rf /var/cache
+rm /sbin/eapol_test
+rm /usr/lib/libstdc++* /usr/lib/libunistring* #this may break things, needs testing
 rm -rf /usr/share/vboot #signing stuff that we don't need
-apk del apk-tools

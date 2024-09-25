@@ -103,7 +103,7 @@ chroot_command="/opt/setup_rootfs_alpine.sh \
 
 LC_ALL=C chroot $rootfs_dir /bin/sh -c "${chroot_command}"
 
-#sed -i $rootfs_dir/usr/bin/gbb_flags_common.sh "s/-p host//g" #make the GBB flags script not be stupid
+sed -i  "s/-p host/-p internal/g" $rootfs_dir/usr/bin/gbb_flags_common.sh #make the GBB flags script not be stupid
 
 trap - EXIT
 unmount_all

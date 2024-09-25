@@ -26,8 +26,17 @@ EOF
   echo "$unbold"
 }
 
+get_wp_status () {
+  status=$(flashrom --wp-status 2>&1 | grep -o "Protection mode: hardware")
+  if [ "$status" = "Protection mode: hardware" ]; then
+    echo 1
+  else
+    echo 0
+  fi
+}
+
 check_wp_status () {
-  if [ $1 ]; then # TODO: actually check the input
+  if [ get_wp_status ]; then 
     echo "WP enabled; aborting!"
     return 1
   else

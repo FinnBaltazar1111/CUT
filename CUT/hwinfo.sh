@@ -23,7 +23,8 @@ hw_info() {
   echo
   echo "ChromeOS rootfs A (/dev/mmcblk0p3) version: ${rootfs1ver}" 
   echo "ChromeOS rootfs B (/dev/mmcblk0p5) version: ${rootfs2ver}"
-  echo "GBB flags: $(get_gbb_flags.sh)"
+  echo "GBB flags: $(get_gbb_flags.sh | grep -o "0x[^ ]*")"
   echo "FWMP status: $()" # Make a raw extraction script at a later date 
+  echo "WP status: $(get_wp_status)"
   read a
 }

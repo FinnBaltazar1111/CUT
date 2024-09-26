@@ -25,6 +25,7 @@ chroot_mounts="proc sys dev run"
 echo $build_dir
 
 if [ -d "$rootfs_dir" ]; then
+  #umount -R "$rootfs_dir"/* # I keep removing my efivars by chrooting in to test fbpad
   rm -r "$rootfs_dir"
 fi
 
@@ -52,7 +53,7 @@ if [ "$(need_remount "$rootfs_dir")" ]; then
   do_remount "$rootfs_dir"
 fi
 
-print_info "bootstraping alpine chroot"
+print_info "bootstrapping alpine chroot"
 
 
 real_arch="x86_64"
@@ -75,7 +76,7 @@ fi
 
 print_info "Building auxilary binaries because ChromeOS just has to be unique"
 
-buildables="flashrom vpd"
+buildables="flashrom vpd fbpad"
 for buildscript in $buildables 
 do
   echo "Building $buildscript"

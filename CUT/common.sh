@@ -22,8 +22,7 @@ logo () {
 ------------------------------------------
 EOF
   echo "$white $bold"
-  echo "     ChromeOS Unenrollment Toolkit"
-  echo "$unbold"
+  echo "     ChromeOS Unenrollment Toolkit$unbold"
 }
 
 get_wp_status () {
@@ -67,11 +66,85 @@ print_doc () {
   doc_text=$(echo "${doc_text}" | sed "s/\[NOUNDERLINE\]/${nounderline}/g")
   doc_text=$(echo "${doc_text}" | sed "s/\[SECTION\]/${bold}${underline}/g")
   doc_text=$(echo "${doc_text}" | sed "s/\[UNSECTION\]/${unbold}${nounderline}/g")
-  doc_text=$(echo "${doc_text}" | sed "s/\[TITLE]\]/# ${bold}${underline}${green}/g")
+  doc_text=$(echo "${doc_text}" | sed "s/\[TITLE\]/# ${bold}${underline}${green}/g")
   doc_text=$(echo "${doc_text}" | sed "s/\[UNTITLE\]/${unbold}${nounderline}${white}/g")
-  doc_text=$(echo "${doc_text}" | sed "s/\[DESC]\]/${bold}${underline}${green}/g")
-  doc_text=$(echo "${doc_text}" | sed "s/\[UNDESC]\]/${unbold}${nounderline}${ungreen}/g")
+  doc_text=$(echo "${doc_text}" | sed "s/\[DESC\]/${bold}${underline}${green}/g")
+  doc_text=$(echo "${doc_text}" | sed "s/\[UNDESC\]/${unbold}${nounderline}${ungreen}/g")
   clear
   echo "${doc_text}" | less
 }
 
+#Below is for the TUI, stolen from the sh1mmer_payload.sh script
+
+readinput() {
+	local mode
+	read -rsn1 mode
+
+	case "$mode" in
+		'') read -rsn2 mode ;;
+		'') echo kB ;;
+		'') echo kE ;;
+		*) echo "$mode" ;;
+	esac
+
+	case "$mode" in
+		'[A') echo kU ;;
+		'[B') echo kD ;;
+		'[D') echo kL ;;
+		'[C') echo kR ;;
+	esac
+}
+
+function setup() {
+	stty -echo # turn off showing of input
+	printf "\033[?25l" # turn off cursor so that it doesn't make holes in the image
+	printf "\033[2J\033[H" # clear screen
+	sleep 0.1
+}
+
+function cleanup() {
+	printf "\033[2J\033[H" # clear screen
+	printf "\033[?25h" # turn on cursor
+	stty echo
+}
+
+function movecursor_generic() {
+	printf "\033[$((2+$1));1H"
+}
+
+selectorLoop() {
+	local selected idx input
+	selected=1
+	while :; do
+		idx=0
+		for opt in "$@"; do
+		  if [ $idx -eq 0 ]; then
+		    idx=1
+		    continue
+		  fi
+			movecursor_generic $(($idx+$(logo | wc -l)+$1)) >&2
+			if [ $idx -eq $selected ]; then
+				printf "\033[0;36m" >&2
+				echo -n "--> $opt" >&2
+			else
+				printf "\033[0m" >&2
+				echo -n "    $opt" >&2
+			fi
+			printf "\033[0m" >&2
+			idx=$(($idx+1))
+		done
+		input=$(readinput)
+		case "$input" in
+		'kB') return 1;;
+		'kE') echo $selected; return ;;
+		'kU')
+		  selected=$(($selected-1))	
+			if [ $selected -lt 1 ]; then selected=$(($# - 1)); fi
+			;;
+		'kD')
+			selected=$(($selected+1))
+			if [ $selected -ge $# ]; then selected=1; fi
+			;;
+		esac
+	done
+}

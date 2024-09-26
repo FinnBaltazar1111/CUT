@@ -12,9 +12,9 @@ utilities () {
   while $run; do
     clear
     logo
-    wp_status=$(flashrom --wp-status -p host)
-    echo -e "$green All of these utilities require WP to be disabled$white"
-    echo -e "$red Current WP status: $wp_status $white"
+    wp_status=$(flashrom --wp-status -p internal)
+    echo "$green All of these utilities require WP to be disabled$white"
+    echo "$red Current WP status: $wp_status $white"
     echo "f - Mr. Chromebox firmware utility script (requires wireless connection)"
     echo "s - Set GBB flags"
     echo "f - Remove FWMP (requires boot from dev mode)"

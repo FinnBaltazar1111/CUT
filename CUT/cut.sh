@@ -8,6 +8,8 @@
 . usr/local/CUT/credits.sh
 . usr/local/CUT/docs.sh
 
+setup
+
 mount /dev/mmcblk0p1 /mnt
 if [ -f /mnt/.fwmp-remove ]; then
   status "FWMP removal directive detected"
@@ -19,31 +21,26 @@ if [ -f /mnt/.fwmp-remove ]; then
   reboot
 fi
 
-while true; do
+while :; do
   clear
   logo
-
-  echo "i - Hardware/software info"
-  echo "p - Payloads"
-  echo "u - Utilities"
-  echo "d - Documentation"
-  echo 
-  echo "c - Credits"
-  echo "s - Shell"
-  echo "r - Reboot"
-
-  read res
+  res=$(
+    selectorLoop 0 \
+      "Hardware/software info" \
+      "Payloads" \
+      "Utilities" \
+      "Documentation" \
+      "Credits" \
+      "Shell" \
+      "Reboot"
+  )
   case $res in
-    "i") hw_info;;
-    "p") payloads;;
-    "u") utilities;;
-    "d") docs;;
-    "s") sh;;
-    "c") credits;;
-    "r") reboot;;
-    *)
-      echo "Invalid selection!"
-      read a
-      ;;
+    1) hw_info;;
+    2) payloads;;
+    3) utilities;;
+    4) docs;;
+    5) sh;;
+    6) credits;;
+    7) reboot;;
   esac
 done

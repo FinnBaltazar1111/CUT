@@ -25,16 +25,16 @@
 
 When a Chromebook boots up, the first action performed depends on which security software is being utilized. <div class='red'>If a
 TI50 is used, the <div class='underline'>GSC</div>, before <div class='underline'>AP</div> load, will verify the RO
-<div class='underline'>AP</div> if <div class='underline'>FWMP<div class='underline'> is set. If this verification fails, the EC will hold the
-system in reset, effectively bricking the system, requiring a <div class='underline'>SuzyQ</div> or external EEPROM flasher
-like a CH341A to recover.</div> For unknown reasons, this check only seems to run on GSC reset, which only occurs if
-the system completely looses power.
+<div class='underline'>AP</div> if <div class='underline'>FWMP<div class='underline'> is set. If this verification fails, the GSC will hold the EC
+in reset, effectively bricking the system, requiring a <div class='underline'>SuzyQ</div> or external EEPROM flasher like a
+CH341A to recover.</div> For unknown reasons, this check only seems to run on GSC reset, which only occurs if the
+system completely looses power.
 
 If the system uses another security chip (or the RO <div class='underline'>AP</div> verification passes/doesn't run), the
 CPU will load the code from the AP and execute it. From here, the AP loads Coreboot, which handles hardware
 initialization before chainloading <div class='underline'>VBoot</div>. <div class='underline'>VBoot</div> first checks if the
 <div class='underline'>Recovery</div> switch is set and continues accordingly.  Continuing in normal boot, it verifies the
-RW region of itself[1], then, if it's valid, it continues on to loading the region. RW then checks if the
+RW region of the firmware[1], then, if it's valid, it continues on to loading the region. RW then checks if the
 <div class='underline'>Developer</div> switch is set; if it is, then it continues on to <div class='underline'>Developer</div>,
 otherwise it continues to <div class='underline'>Verified</div>.
 
@@ -55,11 +55,11 @@ reached or a kernel can be loaded.
 
 Waits until a USB drive is inserted, then verifies the kernel on the USB against the signing key stored in the RO;
 if the key matches, the AP loads Depthcharge pointing at the kernel on the USB. The firmware does not compare the
-kernvers. If recovery is triggered while <div class='underline'>Developer</div> mode is active,
-<div class='underline'>FWMP</div> is set to read-only[1]. Contrary to popular belief, <div class='bold'>RMA Shims don't have a special
-underlying signing key</div>. The AP actually does something quite strange here, as, while the underlying signing
-key is the same, the key actually used to sign the shim also contains a configuration option that specifies it as a
-shim.
+kernvers. If recovery is triggered while <div class='underline'>Developer</div> mode is active, the
+<div class='underline'>FWMP</div>, <div class='underline'>KERNVER</div>, and TPM_FWVER regions are protected from writes[1].
+Contrary to popular belief, <div class='bold'>RMA Shims don't have a special underlying signing key</div>. The AP actually
+does something quite strange here, as, while the underlying signing key is the same, the key actually used to sign
+the shim also contains a configuration option that specifies it as a shim.
 
 
 - <div class='subsection'>Developer</div>

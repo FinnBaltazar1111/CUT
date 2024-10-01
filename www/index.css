@@ -163,7 +163,7 @@ li:not(:has(h3)):before {
 .green, .red, .purple {
   display: inline;
 }
-.green {
+.green, .green > * {
   color: lime;
   text-decoration-color: green;
 }
@@ -174,4 +174,8 @@ li:not(:has(h3)):before {
 .purple, .purple > *{
   color: magenta;
   text-decoration-color: magenta;
+}
+.bold {
+  font-weight: bold;
+  display: inline;
 }

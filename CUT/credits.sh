@@ -14,6 +14,6 @@ credits () {
   echo "VBOOT utilities - ChromiumOS project"
   echo "Flashrom - Flashrom project, ChromiumOS project"
   echo "Logo - Vale#0210"
-  echo "Fact-checking docs - @zeglol, AKA Hannah"
+  echo "Information and fact-checking for docs - Hannah (@zeglol), Katelyn (@kxtzownsu)"
   read a
 }

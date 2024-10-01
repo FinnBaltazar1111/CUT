@@ -41,6 +41,6 @@ while :; do
     4) docs;;
     5) sh;;
     6) credits;;
-    7) reboot;;
+    7) cleanup; exit;;
   esac
 done

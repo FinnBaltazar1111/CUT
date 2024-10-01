@@ -23,6 +23,7 @@ logo () {
 EOF
   echo "$white $bold"
   echo "     ChromeOS Unenrollment Toolkit$unbold"
+  echo "Arrow keys to navigate, Enter to select, b to go back"
 }
 
 get_wp_status () {
@@ -82,7 +83,7 @@ readinput() {
 
 	case "$mode" in
 		'') read -rsn2 mode ;;
-		'') echo kB ;;
+		'b') echo kB ;;
 		'') echo kE ;;
 		*) echo "$mode" ;;
 	esac
@@ -135,7 +136,7 @@ selectorLoop() {
 		done
 		input=$(readinput)
 		case "$input" in
-		'kB') return 1;;
+		'kB') return 1 ;; # doesn't seem to work?
 		'kE') echo $selected; return ;;
 		'kU')
 		  selected=$(($selected-1))	
@@ -147,4 +148,5 @@ selectorLoop() {
 			;;
 		esac
 	done
+	cleanup
 }

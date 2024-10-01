@@ -25,7 +25,7 @@ chroot_mounts="proc sys dev run"
 echo $build_dir
 
 if [ -d "$rootfs_dir" ]; then
-  #umount -R "$rootfs_dir"/* # I keep removing my efivars by chrooting in to test fbpad
+  #umount -R "$rootfs_dir"/* # I keep removing my efivars by chrooting in to test 
   rm -r "$rootfs_dir"
 fi
 
@@ -76,7 +76,7 @@ fi
 
 print_info "Building auxilary binaries because ChromeOS just has to be unique"
 
-buildables="flashrom vpd fbpad"
+buildables="flashrom vpd "
 for buildscript in $buildables 
 do
   echo "Building $buildscript"
@@ -88,7 +88,7 @@ cp shflags/shflags $rootfs_dir/usr/share/misc/shflags
 cp shflags/lib/shunit2 $rootfs_dir/usr/share/misc/lib/shunit2
 
 cp -r ../CUT/ "${rootfs_dir}/usr/local/"
-cp -r ../docs "${rootfs_dir}/usr/local/CUT/docs"
+cp -r ../docs "${rootfs_dir}/usr/local/CUT/"
 
 print_info "creating bind mounts for chroot"
 trap unmount_all EXIT

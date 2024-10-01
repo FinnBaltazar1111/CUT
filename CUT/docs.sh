@@ -33,9 +33,23 @@ systems () {
     logo
     echo "${purple}Documentation - ChromeOS systems${white}"
     echo "${green}Documentation on the various systems utilized in ChromeOS${white}"
-    echo "s - Startpage"
-    echo "f - FWMP"
-    read a
+    sel=$(
+        selectorLoop 1 \
+          "Basic terms and systems" \
+          "FWMP" \
+          "Kernel Versions" \
+          "Update system" \
+          "(Enc)stateful" \
+          "Titan-C vs CR50 vs TI50" \
+          "AP" \
+          "VPD"
+    )
+    case $sel in
+      1) print_doc "systems/terminology" ;;
+      3) print_doc "systems/kernver" ;;
+      '') run=false ;;
+      *) echo "Sorry, I haven't written this docpage yet"
+    esac
   done
 }
 

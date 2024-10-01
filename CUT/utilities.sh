@@ -12,31 +12,27 @@ utilities () {
   while $run; do
     clear
     logo
-    wp_status=$(flashrom --wp-status -p internal)
+    wp_status=$(get_wp_status)
     echo "$green All of these utilities require WP to be disabled$white"
     echo "$red Current WP status: $wp_status $white"
-    echo "f - Mr. Chromebox firmware utility script (requires wireless connection)"
-    echo "s - Set GBB flags"
-    echo "f - Remove FWMP (requires boot from dev mode)"
-    echo "s - Set FWMP flags (requires boot from dev mode)"
-    echo "k - Set kernver"
-    echo "p - Pencilmod WP disable loop"
-    echo "w - Connect to a WPA wireless network"
-    echo "b - Back"
-
-    read sel
-
+    sel=$(
+      selectorLoop 1 \
+        "Mr. Chromebox firmware utility script (requires wireless connection)" \
+        "Set GBB flags" \
+        "Remove FWMP (requires boot from NOFWMP dev mode)" \
+        "Set FWMP flags (requires boot from NOFWMP dev mode)" \
+        "Set kernver" \
+        "AP WP disable loop" \
+        "Connect to a WPA wireless network"
+    )
     case $sel in
-      "s") set_gbb_flags;;
-      "f") clear_fwmp;;
-      "s") set_fwmp_flags;;
-      "k") set_kernver 0x000000;;
-      "p") pencilloop;;
-      "w") connect_wireless;;
-      "b") run=false;;
-      *)
-        echo "Invalid selection!"
-        read a
+      1) set_gbb_flags;;
+      2) clear_fwmp;;
+      3) set_fwmp_flags;;
+      4) set_kernver 0x000000;;
+      5) pencilloop;;
+      6) connect_wireless;;
+      *) run=false
     esac
   done
 }

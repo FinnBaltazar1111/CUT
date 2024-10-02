@@ -40,6 +40,7 @@
     Contrary to popular belief, [BOLD]RMA Shims don't have a special underlying signing key[UNBOLD]. The AP actually
     does something quite strange here, as, while the underlying signing key is the same, the key actually used to sign
     the shim also contains a configuration option that specifies it as a shim.
+    
   
   - [SUBSECTION]Developer[NOSUBSECTION]
     

@@ -3,9 +3,6 @@
 . usr/local/CUT/common.sh
 
 set_kernver() {
-  if [ ! $(check_wp_status "${wp_status}") ]; then
-      read -p "Kernel version to set: " kver
-      set_kver.sh $kver
-  fi
+  echo "02  4c 57 52 47  0 0 0 0  0 0 0  e8" | tpm2_nvwrite 0x1008
   read a
 }

@@ -1,18 +1,24 @@
 name: Build and Release
+
 on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
+
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
+
     - name: Set up dependencies
       run: |
         sudo apt update
-        sudo apt install -y wget python3 unzip zip git debootstrap cpio binwalk pcregrep cgpt mkfs.ext4 mkfs.ext2 fdisk depmod findmnt lz4 pv qemu-user-statica
+        sudo apt install -y wget python3 unzip zip git debootstrap cpio binwalk pcregrep cgpt mkfs.ext4 mkfs.ext2 fdisk depmod findmnt lz4 pv qemu-user-static
+
     - name: Build Jacuzzi binary
       run: |
         cd scripts
